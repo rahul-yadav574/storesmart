@@ -6,7 +6,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Adapter;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
@@ -16,13 +21,26 @@ import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
+import com.google.android.gms.maps.model.LatLng;
+import com.thomashaertel.widget.MultiSpinner;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener{
 
     private GoogleApiClient mGoogleApiClient;
     static final int PLACE_AUTOCOMPLETE_REQUEST_CODE = 574;
     final String TAG = "MainMapActivity";
-    Button getWareHouse;
+    Button submitQueryButton;
+    EditText placeSearch,radiusInput,quantityInput;
+    LatLng userInputLatLng = null;
+    Button conditionSelectSpinner;
+    List<String> conditionsSKU;
+    MultiSpinner multiSpinner;
+    private ArrayAdapter<String> adapter;
+    private String[] allConditions = new String[]{"Cold Conditions","Hot Conditions","Mild Conditions"};
+
 
 
     @Override
@@ -37,15 +55,54 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 .enableAutoManage(this, this)
                 .build();
 
-        getWareHouse = (Button) findViewById(R.id.get_ware_house);
+        submitQueryButton = (Button) findViewById(R.id.submitQueryButton);
 
-        getWareHouse.setOnClickListener(new View.OnClickListener() {
+        placeSearch = (EditText) findViewById(R.id.get_ware_house);
+        radiusInput = (EditText) findViewById(R.id.radiusInput);
+        quantityInput  = (EditText) findViewById(R.id.capacityInput);
+        multiSpinner = (MultiSpinner) findViewById(R.id.spinnerMulti);
+        conditionsSKU = new ArrayList<>();
+
+
+        placeSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 findPlace();
             }
         });
+
+        submitQueryButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                submitQuery();
+            }
+        });
+
+        // create spinner list elements
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item);
+        adapter.addAll(allConditions);
+
+        // get spinner and set adapter
+
+        multiSpinner.setAdapter(adapter, false, onSelectedListener);
+
+
+
     }
+
+    private MultiSpinner.MultiSpinnerListener onSelectedListener = new MultiSpinner.MultiSpinnerListener() {
+        public void onItemsSelected(boolean[] selected) {
+
+            for (int i=0;i<selected.length;i++){
+
+                if (selected[i]){
+                    conditionsSKU.add(allConditions[i]);
+                }
+            }
+
+
+        }
+    };
 
     public void findPlace() {
         try {
@@ -66,7 +123,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 Place place = PlaceAutocomplete.getPlace(this, data);
-
+                userInputLatLng = place.getLatLng();
+                placeSearch.setText(place.getName());
                 Log.i(TAG,"Latitude And Longitude Are :"+place.getLatLng());
             } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
                 Status status = PlaceAutocomplete.getStatus(this, data);
@@ -82,5 +140,35 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Log.e(TAG,"Can,t Connect To Google Api Client");
+    }
+
+    private void submitQuery(){
+
+        if (userInputLatLng==null){
+            Toast.makeText(MainActivity.this, "Please Select A Place", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if ( radiusInput.getText().toString().length()<=0){
+            Toast.makeText(MainActivity.this, "Please Select Radius", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if ( quantityInput.getText().toString().length()<=0){
+            Toast.makeText(MainActivity.this, "Please Select Quantity", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (conditionsSKU.size()<=0){
+            Toast.makeText(MainActivity.this, "Please Select Conditions", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        startGettingBestDeals();
+    }
+
+
+    private void startGettingBestDeals(){
+        Toast.makeText(MainActivity.this, "Viru Pitega", Toast.LENGTH_SHORT).show();
     }
 }

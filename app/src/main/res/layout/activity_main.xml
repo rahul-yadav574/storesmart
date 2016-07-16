@@ -6,11 +6,68 @@
     tools:context="com.example.brekkishhh.geekcombat.MainActivity">
 
 
-    <Button
-        android:layout_width="wrap_content"
+
+
+    <EditText
+        android:inputType="none"
+        android:hint="Search For A Warehouse"
+        android:gravity="center"
+        android:padding="20dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="GET WAREHOUSE"
         android:id="@+id/get_ware_house"/>
+
+    <LinearLayout
+        android:id="@+id/container"
+        android:layout_below="@+id/get_ware_house"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <EditText
+            android:inputType="number"
+            android:gravity="center"
+            android:paddingLeft="10dp"
+            android:hint="Amount :"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:id="@+id/capacityInput"/>
+        <EditText
+            android:focusable="false"
+            android:inputType="number"
+            android:gravity="center"
+            android:paddingRight="10dp"
+            android:hint="Radius :"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:id="@+id/radiusInput"/>
+
+
+
+
+    </LinearLayout>
+
+    <com.thomashaertel.widget.MultiSpinner
+        android:text="Select Conditions"
+        android:gravity="center"
+        android:layout_margin="30dp"
+        android:layout_below="@+id/container"
+        android:id="@+id/spinnerMulti"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:text="GET BEST DEAL"
+        android:layout_marginRight="50dp"
+        android:layout_marginLeft="50dp"
+        android:layout_below="@+id/spinnerMulti"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:id="@+id/submitQueryButton"/>
+
 
 
 </RelativeLayout>
